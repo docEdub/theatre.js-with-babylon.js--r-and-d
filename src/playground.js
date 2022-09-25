@@ -85,10 +85,39 @@ var createScene = function () {
 
     //#endregion
 
-    //#region Sphere
+    const mainParent = new BABYLON.TransformNode(`Main`)
 
-    const sphere = BABYLON.MeshBuilder.CreateSphere(`sphere`, { diameter: 1, segments: 16 })
-    sphere.position.y = 0.5
+    //#region Spheres
+
+    const sphereParent = new BABYLON.TransformNode(`Main / Spheres`)
+    sphereParent.parent = mainParent
+
+    const sphere1 = BABYLON.MeshBuilder.CreateSphere(`Main / Spheres / 1`, { diameter: 1, segments: 16 })
+    sphere1.parent = sphereParent
+    sphere1.position.x = -2
+    sphere1.position.y = 0.5
+
+    const sphere2 = BABYLON.MeshBuilder.CreateSphere(`Main / Spheres / 2`, { diameter: 1, segments: 16 })
+    sphere2.parent = sphereParent
+    sphere2.position.x = 2
+    sphere2.position.y = 0.5
+
+    //#endregion
+
+    //#region Boxes
+
+    const boxParent = new BABYLON.TransformNode(`Main / Boxes`)
+    boxParent.parent = mainParent
+
+    const box1 = BABYLON.MeshBuilder.CreateBox(`Main / Boxes / 1`, { size: 1 })
+    box1.parent = boxParent
+    box1.position.y = 0.5
+    box1.position.z = -2
+
+    const box2 = BABYLON.MeshBuilder.CreateBox(`Main / Boxes / 2`, { size: 1 })
+    box2.parent = boxParent
+    box2.position.y = 0.5
+    box2.position.z = 2
 
     //#endregion
 
@@ -101,17 +130,30 @@ var createScene = function () {
             this.project = THEATRE.project
             this.sheet = this.project.sheet(`Main sheet`)
 
-            this.sphereAnimation = this.sheet.object(`sphere`, {
-                position: THEATRE.types.compound({
-                    x: THEATRE.types.number(sphere.position.x, { range: [-5, 5] }),
-                    y: THEATRE.types.number(sphere.position.y, { range: [-5, 5] }),
-                    z: THEATRE.types.number(sphere.position.z, { range: [-5, 5] })
+            const createTheatreObjectForNode = (node) => {
+                const properties = {
+                    position: THEATRE.types.compound({
+                        x: THEATRE.types.number(node.position.x, { range: [-5, 5] }),
+                        y: THEATRE.types.number(node.position.y, { range: [-5, 5] }),
+                        z: THEATRE.types.number(node.position.z, { range: [-5, 5] })
+                    })
+                }
+
+                this.sheet.object(node.name, properties).onValuesChange((values) => {
+                    const { x, y, z } = values.position
+                    node.position.set(x, y, z)
                 })
-            })
-            this.sphereAnimation.onValuesChange((values) => {
-                const { x, y, z } = values.position
-                sphere.position.set(x, y, z)
-            })
+            }
+
+            createTheatreObjectForNode(mainParent)
+
+            createTheatreObjectForNode(sphereParent)
+            createTheatreObjectForNode(sphere1)
+            createTheatreObjectForNode(sphere2)
+
+            createTheatreObjectForNode(boxParent)
+            createTheatreObjectForNode(box1)
+            createTheatreObjectForNode(box2)
         }
     }
 

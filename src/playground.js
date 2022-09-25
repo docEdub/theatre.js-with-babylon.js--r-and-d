@@ -71,7 +71,11 @@ var createScene = function () {
     }
 
     const toDegrees = (value) => {
-        return (value / TwoPI) * 360
+        return (value / TWO_PI) * 360
+    }
+
+    const toRadians = (value) => {
+        return (value / 360) * TWO_PI
     }
 
     //#endregion
@@ -136,12 +140,32 @@ var createScene = function () {
                         x: THEATRE.types.number(node.position.x),
                         y: THEATRE.types.number(node.position.y),
                         z: THEATRE.types.number(node.position.z)
+                    }),
+                    rotation: THEATRE.types.compound({
+                        x: THEATRE.types.number(toDegrees(node.rotation.x)),
+                        y: THEATRE.types.number(toDegrees(node.rotation.y)),
+                        z: THEATRE.types.number(toDegrees(node.rotation.z))
+                    }),
+                    scale: THEATRE.types.compound({
+                        x: THEATRE.types.number(node.scaling.x),
+                        y: THEATRE.types.number(node.scaling.y),
+                        z: THEATRE.types.number(node.scaling.z)
                     })
                 }
 
                 this.sheet.object(node.name, properties).onValuesChange((values) => {
-                    const { x, y, z } = values.position
-                    node.position.set(x, y, z)
+                    {
+                        const { x, y, z } = values.position
+                        node.position.set(x, y, z)
+                    }
+                    {
+                        const { x, y, z } = values.rotation
+                        node.rotation.set(toRadians(x), toRadians(y), toRadians(z))
+                    }
+                    {
+                        const { x, y, z } = values.scale
+                        node.scaling.set(x, y, z)
+                    }
                 })
             }
 

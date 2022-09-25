@@ -133,9 +133,9 @@ var createScene = function () {
             const createTheatreObjectForNode = (node) => {
                 const properties = {
                     position: THEATRE.types.compound({
-                        x: THEATRE.types.number(node.position.x, { range: [-5, 5] }),
-                        y: THEATRE.types.number(node.position.y, { range: [-5, 5] }),
-                        z: THEATRE.types.number(node.position.z, { range: [-5, 5] })
+                        x: THEATRE.types.number(node.position.x),
+                        y: THEATRE.types.number(node.position.y),
+                        z: THEATRE.types.number(node.position.z)
                     })
                 }
 

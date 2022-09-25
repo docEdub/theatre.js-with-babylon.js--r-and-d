@@ -92,6 +92,31 @@ var createScene = function () {
 
     //#endregion
 
+    //#region Theatre.js setup
+
+    new class Theatre {
+        constructor() {
+            THEATRE.studio.initialize()
+
+            this.project = THEATRE.project
+            this.sheet = this.project.sheet(`Main sheet`)
+
+            this.sphereAnimation = this.sheet.object(`sphere`, {
+                position: THEATRE.types.compound({
+                    x: THEATRE.types.number(sphere.position.x, { range: [-5, 5] }),
+                    y: THEATRE.types.number(sphere.position.y, { range: [-5, 5] }),
+                    z: THEATRE.types.number(sphere.position.z, { range: [-5, 5] })
+                })
+            })
+            this.sphereAnimation.onValuesChange((values) => {
+                const { x, y, z } = values.position
+                sphere.position.set(x, y, z)
+            })
+        }
+    }
+
+    //#endregion
+
     return scene
 }
 

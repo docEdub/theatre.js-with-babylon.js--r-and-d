@@ -1,0 +1,82 @@
+{
+  "sheetsById": {
+    "Main sheet": {
+      "staticOverrides": {
+        "byObject": {}
+      },
+      "sequence": {
+        "subUnitsPerUnit": 30,
+        "length": 10,
+        "type": "PositionalSequence",
+        "tracksByObject": {
+          "sphere": {
+            "trackData": {
+              "etojakFxSj": {
+                "type": "BasicKeyframedTrack",
+                "__debugName": "sphere:[\"position\",\"x\"]",
+                "keyframes": []
+              },
+              "m9FeMD2RHq": {
+                "type": "BasicKeyframedTrack",
+                "__debugName": "sphere:[\"position\",\"y\"]",
+                "keyframes": []
+              },
+              "gXv2mbK69Q": {
+                "type": "BasicKeyframedTrack",
+                "__debugName": "sphere:[\"position\",\"z\"]",
+                "keyframes": [
+                  {
+                    "id": "VokYrmuAq2",
+                    "position": 0,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "value": 0
+                  },
+                  {
+                    "id": "wpEV-820E8",
+                    "position": 5,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "value": 5
+                  },
+                  {
+                    "id": "6n4PH4dT93",
+                    "position": 10,
+                    "connectedRight": true,
+                    "handles": [
+                      0.5,
+                      1,
+                      0.5,
+                      0
+                    ],
+                    "value": 0
+                  }
+                ]
+              }
+            },
+            "trackIdByPropPath": {
+              "[\"position\",\"x\"]": "etojakFxSj",
+              "[\"position\",\"y\"]": "m9FeMD2RHq",
+              "[\"position\",\"z\"]": "gXv2mbK69Q"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitionVersion": "0.4.0",
+  "revisionHistory": [
+    "iUMwZjxKBSBi3tTq",
+    "YunQgT7zseRXTMIY"
+  ]
+}

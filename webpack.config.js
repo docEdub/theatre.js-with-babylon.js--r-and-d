@@ -35,7 +35,7 @@ module.exports = {
                 ), ''
             ),
             template: path.resolve(__dirname, 'src', 'index.html'),
-            title: 'soundrop3d',
+            title: 'Theatre.js+Babylon.js',
         }),
     ],
     resolve: {

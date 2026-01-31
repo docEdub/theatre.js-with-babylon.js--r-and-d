@@ -153,7 +153,10 @@ var createScene = function () {
                     })
                 }
 
-                this.sheet.object(node.name, properties).onValuesChange((values) => {
+                node.theatreObject = this.sheet.object(node.name, properties);
+                node.theatreObject.babylonNode = node;
+
+                node.theatreObject.onValuesChange((values) => {
                     {
                         const { x, y, z } = values.position
                         node.position.set(x, y, z)
@@ -168,6 +171,39 @@ var createScene = function () {
                     }
                 })
 
+                let debounceTimeout = null;
+
+                node.onAfterWorldMatrixUpdateObservable.add(() => {
+                    if (gizmoManager.isDragging) {
+                        clearTimeout(debounceTimeout);
+                        debounceTimeout = setTimeout(() => {
+                            THEATRE.studio.transaction(({ set }) => {
+                                if (gizmoManager.positionGizmoEnabled) {
+                                    set(node.theatreObject.props.position, {
+                                        x: node.position.x,
+                                        y: node.position.y,
+                                        z: node.position.z
+                                    });
+                                }
+                                if (gizmoManager.rotationGizmoEnabled) {
+                                    set(node.theatreObject.props.rotation, {
+                                        x: toDegrees(node.rotation.x),
+                                        y: toDegrees(node.rotation.y),
+                                        z: toDegrees(node.rotation.z)
+                                    });
+                                }
+                                if (gizmoManager.scaleGizmoEnabled) {
+                                    set(node.theatreObject.props.scale, {
+                                        x: node.scaling.x,
+                                        y: node.scaling.y,
+                                        z: node.scaling.z
+                                    });
+                                }
+                            });
+                        }, 100);
+                    }
+                });
+
                 const children = node.getChildTransformNodes(true);
                 for (let i = 0; i < children.length; i++) {
                     createTheatreObjectForNode(children[i]);
@@ -177,6 +213,85 @@ var createScene = function () {
             createTheatreObjectForNode(mainParent)
         }
     }
+
+    //#endregion
+
+    //#region Selection
+
+    const gizmoManager = new BABYLON.GizmoManager(scene);
+    gizmoManager.enableAutoPicking = false;
+    gizmoManager.attachableMeshes = [sphere1, sphere2, box1, box2];
+
+    gizmoManager.onAttachedToMeshObservable.add((mesh) => {
+        THEATRE.studio.setSelection([mesh.theatreObject]);
+    });
+
+    let pointerDown = false;
+    let pointerDragged = false;
+
+    scene.onPointerObservable.add((pointerInfo) => {
+        switch (pointerInfo.type) {
+			case BABYLON.PointerEventTypes.POINTERDOWN:
+				if (pointerInfo.pickInfo.hit && pointerInfo.pickInfo.pickedMesh != ground) {
+                    if (gizmoManager.attachedMesh !== pointerInfo.pickInfo.pickedMesh) {
+                        gizmoManager.positionGizmoEnabled = true;
+                        gizmoManager.attachToMesh(pointerInfo.pickInfo.pickedMesh);
+                    } else if (gizmoManager.positionGizmoEnabled) {
+                        gizmoManager.positionGizmoEnabled = false;
+                        gizmoManager.rotationGizmoEnabled = true;
+                    } else if (gizmoManager.rotationGizmoEnabled) {
+                        gizmoManager.rotationGizmoEnabled = false;
+                        gizmoManager.scaleGizmoEnabled = true;
+                    } else if (gizmoManager.scaleGizmoEnabled) {
+                        gizmoManager.scaleGizmoEnabled = false;
+                    } else {
+                        gizmoManager.positionGizmoEnabled = true;
+                        THEATRE.studio.setSelection([gizmoManager.attachedMesh.theatreObject]);
+                    }
+                } else {
+                    pointerDown = true;
+                    pointerDragged = false;
+                }
+
+				break;
+
+            case BABYLON.PointerEventTypes.POINTERMOVE:
+                if (pointerDown) {
+                    pointerDragged = true;
+                }
+                break;
+
+            case BABYLON.PointerEventTypes.POINTERUP:
+                if (pointerDown && !pointerDragged) {
+                    gizmoManager.positionGizmoEnabled = false;
+                    gizmoManager.rotationGizmoEnabled = false;
+                    gizmoManager.scaleGizmoEnabled = false;
+
+                    THEATRE.studio.setSelection([]);
+                }
+
+                pointerDown = false;
+
+                break;
+        }
+    });
+
+    THEATRE.studio.onSelectionChange((selectedTheatreObjects) => {
+        for (let i = 0; i < selectedTheatreObjects.length; i++) {
+            const node = selectedTheatreObjects[i].babylonNode;
+            if (!node) {
+                gizmoManager.positionGizmoEnabled = false;
+                gizmoManager.rotationGizmoEnabled = false;
+                gizmoManager.scaleGizmoEnabled = false;
+            } else if (node instanceof BABYLON.AbstractMesh) {
+                gizmoManager.attachToMesh(node);
+                gizmoManager.positionGizmoEnabled = true;
+            } else {
+                gizmoManager.attachToNode(node);
+                gizmoManager.positionGizmoEnabled = true;
+            }
+        }
+    });
 
     //#endregion
 

@@ -75,6 +75,16 @@ var createScene = function () {
 
     //#endregion
 
+    //#region Materials
+
+    const spheresMaterial = new BABYLON.StandardMaterial(`Spheres`);
+    spheresMaterial.diffuseColor.a = 1;
+
+    const boxesMaterial = new BABYLON.StandardMaterial(`Boxes`);
+    boxesMaterial.diffuseColor.a = 1;
+
+    //#endregion
+
     //#region Ground
 
     const ground = BABYLON.MeshBuilder.CreateGround(`ground`, { width: 10, height: 10 })
@@ -95,11 +105,13 @@ var createScene = function () {
     sphere1.parent = sphereParent
     sphere1.position.x = -2
     sphere1.position.y = 0.5
+    sphere1.material = spheresMaterial;
 
     const sphere2 = BABYLON.MeshBuilder.CreateSphere(`Main / Spheres / 2`, { diameter: 1, segments: 16 })
     sphere2.parent = sphereParent
     sphere2.position.x = 2
     sphere2.position.y = 0.5
+    sphere2.material = spheresMaterial;
 
     //#endregion
 
@@ -130,34 +142,45 @@ var createScene = function () {
             this.sheet = this.project.sheet(`Main sheet`)
 
             const createTheatreObjectForNode = (node) => {
-                const properties = {
-                    pos: THEATRE.types.compound({
-                        x: THEATRE.types.number(node.position.x),
-                        y: THEATRE.types.number(node.position.y),
-                        z: THEATRE.types.number(node.position.z)
-                    }),
-                    rot: THEATRE.types.compound({
-                        x: THEATRE.types.number(toDegrees(node.rotation.x)),
-                        y: THEATRE.types.number(toDegrees(node.rotation.y)),
-                        z: THEATRE.types.number(toDegrees(node.rotation.z))
-                    }),
-                    scale: THEATRE.types.compound({
-                        x: THEATRE.types.number(node.scaling.x),
-                        y: THEATRE.types.number(node.scaling.y),
-                        z: THEATRE.types.number(node.scaling.z)
-                    })
-                }
+                const properties = {};
 
                 if (node.visibility !== undefined) {
                     properties.vis = THEATRE.types.number(node.visibility, { range: [0, 1] });
                 }
+
+                if (node.material?.diffuseColor !== undefined) {
+                    properties.color = THEATRE.types.rgba(node.material.diffuseColor);
+                }
+
+                properties.pos = THEATRE.types.compound({
+                    x: THEATRE.types.number(node.position.x),
+                    y: THEATRE.types.number(node.position.y),
+                    z: THEATRE.types.number(node.position.z)
+                });
+                properties.rot = THEATRE.types.compound({
+                    x: THEATRE.types.number(toDegrees(node.rotation.x)),
+                    y: THEATRE.types.number(toDegrees(node.rotation.y)),
+                    z: THEATRE.types.number(toDegrees(node.rotation.z))
+                });
+                properties.scale = THEATRE.types.compound({
+                    x: THEATRE.types.number(node.scaling.x),
+                    y: THEATRE.types.number(node.scaling.y),
+                    z: THEATRE.types.number(node.scaling.z)
+                });
 
                 node.theatreObject = this.sheet.object(node.name, properties);
                 node.theatreObject.babylonNode = node;
 
                 node.theatreObject.onValuesChange((values) => {
                     {
-                        node.visibility = values.vis;
+                        if (values.vis !== undefined) {
+                            node.visibility = values.vis;
+                        }
+                    }
+                    {
+                        if (values.color !== undefined) {
+                            node.material.diffuseColor.set(values.color.r, values.color.g, values.color.b);
+                        }
                     }
                     {
                         const { x, y, z } = values.pos

@@ -131,12 +131,12 @@ var createScene = function () {
 
             const createTheatreObjectForNode = (node) => {
                 const properties = {
-                    position: THEATRE.types.compound({
+                    pos: THEATRE.types.compound({
                         x: THEATRE.types.number(node.position.x),
                         y: THEATRE.types.number(node.position.y),
                         z: THEATRE.types.number(node.position.z)
                     }),
-                    rotation: THEATRE.types.compound({
+                    rot: THEATRE.types.compound({
                         x: THEATRE.types.number(toDegrees(node.rotation.x)),
                         y: THEATRE.types.number(toDegrees(node.rotation.y)),
                         z: THEATRE.types.number(toDegrees(node.rotation.z))
@@ -148,16 +148,23 @@ var createScene = function () {
                     })
                 }
 
+                if (node.visibility !== undefined) {
+                    properties.vis = THEATRE.types.number(node.visibility, { range: [0, 1] });
+                }
+
                 node.theatreObject = this.sheet.object(node.name, properties);
                 node.theatreObject.babylonNode = node;
 
                 node.theatreObject.onValuesChange((values) => {
                     {
-                        const { x, y, z } = values.position
+                        node.visibility = values.vis;
+                    }
+                    {
+                        const { x, y, z } = values.pos
                         node.position.set(x, y, z)
                     }
                     {
-                        const { x, y, z } = values.rotation
+                        const { x, y, z } = values.rot
                         node.rotation.set(toRadians(x), toRadians(y), toRadians(z))
                     }
                     {
@@ -174,14 +181,14 @@ var createScene = function () {
                         debounceTimeout = setTimeout(() => {
                             THEATRE.studio.transaction(({ set }) => {
                                 if (gizmoManager.positionGizmoEnabled) {
-                                    set(node.theatreObject.props.position, {
+                                    set(node.theatreObject.props.pos, {
                                         x: node.position.x,
                                         y: node.position.y,
                                         z: node.position.z
                                     });
                                 }
                                 if (gizmoManager.rotationGizmoEnabled) {
-                                    set(node.theatreObject.props.rotation, {
+                                    set(node.theatreObject.props.rot, {
                                         x: toDegrees(node.rotation.x),
                                         y: toDegrees(node.rotation.y),
                                         z: toDegrees(node.rotation.z)

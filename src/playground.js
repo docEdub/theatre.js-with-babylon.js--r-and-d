@@ -89,11 +89,11 @@ var createScene = function () {
 
     //#endregion
 
-    const mainParent = new BABYLON.TransformNode(`Main`)
+    const mainParent = new BABYLON.TransformNode(`Main / ..`)
 
     //#region Spheres
 
-    const sphereParent = new BABYLON.TransformNode(`Main / Spheres`)
+    const sphereParent = new BABYLON.TransformNode(`Main / Spheres / ..`)
     sphereParent.parent = mainParent
 
     const sphere1 = BABYLON.MeshBuilder.CreateSphere(`Main / Spheres / 1`, { diameter: 1, segments: 16 })
@@ -110,7 +110,7 @@ var createScene = function () {
 
     //#region Boxes
 
-    const boxParent = new BABYLON.TransformNode(`Main / Boxes`)
+    const boxParent = new BABYLON.TransformNode(`Main / Boxes / ..`)
     boxParent.parent = mainParent
 
     const box1 = BABYLON.MeshBuilder.CreateBox(`Main / Boxes / 1`, { size: 1 })

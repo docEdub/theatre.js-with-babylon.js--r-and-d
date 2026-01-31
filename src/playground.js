@@ -195,7 +195,7 @@ var createScene = function () {
                                     });
                                 }
                             });
-                        }, 100);
+                        }, 500);
                     }
                 });
 

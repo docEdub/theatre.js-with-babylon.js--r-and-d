@@ -167,17 +167,14 @@ var createScene = function () {
                         node.scaling.set(x, y, z)
                     }
                 })
+
+                const children = node.getChildTransformNodes(true);
+                for (let i = 0; i < children.length; i++) {
+                    createTheatreObjectForNode(children[i]);
+                }
             }
 
             createTheatreObjectForNode(mainParent)
-
-            createTheatreObjectForNode(sphereParent)
-            createTheatreObjectForNode(sphere1)
-            createTheatreObjectForNode(sphere2)
-
-            createTheatreObjectForNode(boxParent)
-            createTheatreObjectForNode(box1)
-            createTheatreObjectForNode(box2)
         }
     }
 

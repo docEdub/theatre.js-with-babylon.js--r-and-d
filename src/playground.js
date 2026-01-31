@@ -26,11 +26,6 @@ var createScene = function () {
     const startXr = async () => {
         try {
             const xr = await scene.createDefaultXRExperienceAsync({})
-            if (!!xr && !!xr.enterExitUI) {
-                xr.enterExitUI.activeButtonChangedObservable.add(() => {
-                    BABYLON.Engine.audioEngine.unlock()
-                })
-            }
         }
         catch(e) {
             console.debug(e)
